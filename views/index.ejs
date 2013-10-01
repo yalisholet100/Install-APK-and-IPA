@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link href="/<%= prefix %>css/bootstrap.min.css" rel="stylesheet">  
+    <link href="/<%= prefix %>css/bootstrap-responsive.min.css" rel="stylesheet">  
+    <meta name="viewport" content="width=device-width"/>
+    <script type="text/javascript" src="/<%= prefix %>js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/<%= prefix %>js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+$(document).ready(function() {
+  $('#projects a').click(function() {
+    $('#apps').html('Select a build number');
+    $('#selected_build').html('');
+    var project = $(this).html();
+    $('#selected_project').html(project);
+    // Get build numbers
+    $.ajax({
+      type: 'GET',
+      url: '/<%= prefix %>builds/' + project,
+      timeout: 10000,
+      async: true,
+      dataType: 'json',
+      cache: false,
+      success: function(data, dataType) {
+        $('#builds').html(
+          data.builds.map(function(item){
+            return '<li><a href="#">' + item + '</a></li>';
+          })
+        );
+        // Get Application List
+        $('#builds a').click(function() {
+          var build = $(this).html();
+          $('#selected_build').html(build);
+          $.ajax({
+            url : '/<%= prefix %>apps/' + project + '/' + build,
+            timeout : 10000,
+            async: true, 
+            dataType: 'json',
+            cache: false,
+            success: function(data, dataType) {
+              // Add build status
+              $('#build_status').html(
+                  data.status + ' : ' + data.timestamp
+              );
+              // Add app list
+              $('#apps').html(
+                data.apps.map(function(item){
+                  // Item is ipa file
+                  if(item.match(/.ipa/)) {
+                    var url = 'http://<%= host %>/<%= prefix %>plist/' + encodeURIComponent(encodeURIComponent(project)) + '/' + encodeURIComponent(encodeURIComponent(build)) + '/' + encodeURIComponent(encodeURIComponent(item)) + '.plist'
+                    return '<li><a href="itms-services://?action=download-manifest&url=' + url + '">' + item + '</a></li>';
+                  }
+                  // Item is apk file
+                  else if(item.match(/.apk/)) {
+                    return '<li><a href="http://<%= host %>/<%= prefix %>apk/' + encodeURIComponent(project) + '/' + encodeURIComponent(build) + '/' + encodeURIComponent(item) + '">' + item + '</a></li>';
+                  }
+                })
+              );
+            },
+            error: function (jqXHR, status, error) {
+              alert(error);
+            }
+          });
+        });
+      },
+      error: function (jqXHR, status, error) {
+        alert(error);
+      }
+    });
+  });
+});
+    </script>
+  </head>
+  <body class="container">
+    <div class="row">
+      <div class="span12">
+        <h3><%= title %></h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span12">
+        <div class="dropdown">
+          <a class="btn dropdown-toggle" role="button" data-toggle="dropdown" data-target="#" href="#">Projects<b class="caret"></b></a>
+          <ul id="projects" class="dropdown-menu" role="menu">
+          <% for(var i in projects) { %>
+            <li><a href="#"><%= projects[i] %></a></li>
+          <% } %>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span12">
+        <div class="dropdown">
+          <a class="btn dropdown-toggle" role="button" data-toggle="dropdown" data-target="#" href="#">Builds<b class="caret"></b></a>
+          <ul id="builds" class="dropdown-menu" role="menu">
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span12">
+        <p id="selected_project">
+        </p>
+        <p id="selected_build">
+        </p> 
+        <p id="build_status">
+        </p>
+        <ul id="apps">
+          Select a build number
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
