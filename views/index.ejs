@@ -47,12 +47,12 @@ $(document).ready(function() {
               $('#apps').html(
                 data.apps.map(function(item){
                   // Item is ipa file
-                  if(item.match(/.ipa/)) {
+                  if(item.match(/\.ipa/)) {
                     var url = 'http://<%= host %>/<%= prefix %>plist/' + encodeURIComponent(encodeURIComponent(project)) + '/' + encodeURIComponent(encodeURIComponent(build)) + '/' + encodeURIComponent(encodeURIComponent(item)) + '.plist'
                     return '<li><a href="itms-services://?action=download-manifest&url=' + url + '">' + item + '</a></li>';
                   }
                   // Item is apk file
-                  else if(item.match(/.apk/)) {
+                  else if(item.match(/\.apk/)) {
                     return '<li><a href="http://<%= host %>/<%= prefix %>apk/' + encodeURIComponent(project) + '/' + encodeURIComponent(build) + '/' + encodeURIComponent(item) + '">' + item + '</a></li>';
                   }
                 })
