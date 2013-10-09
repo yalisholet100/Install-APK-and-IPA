@@ -62,7 +62,7 @@ exports.apps = function(req, res) {
           parser.parseString(data, function(err, result) {
             var timestamp = moment(parseInt(result.build.startTime[0]));
             res.writeHead(200, {'Content-Type':'application/json'});
-            res.write('{"apps":' + JSON.stringify(apps) + ',"os":"' + os + '","status":"' + result.build.result + '","timestamp":"' + timestamp.format("YYYY/MM/DD HH:mm:ss") + '"}');
+            res.write('{"apps":' + JSON.stringify(apps) + ',"status":"' + result.build.result + '","timestamp":"' + timestamp.format("YYYY/MM/DD HH:mm:ss") + '"}');
             res.end();
           });
         } else {
