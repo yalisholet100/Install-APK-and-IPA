@@ -84,9 +84,6 @@ exports.plist = function(req, res) {
   exec(cmd, function(err, stdout, stderr) {
     if(err === null) {
       var app = stdout.split('\n').filter(function(item){return item.indexOf(req.params.app.substring(0, req.params.app.lastIndexOf('.'))) > -1})[0];
-      if(req.params.project === "Resign") {
-        app = dir + '/' + app;
-      }
       // Unzip .ipa file
       cmd = 'unzip -o "' + app + '" -d "' + __dirname + '"';
       var unzip = spawn('unzip', ['-o', app, '-d', __dirname]);
